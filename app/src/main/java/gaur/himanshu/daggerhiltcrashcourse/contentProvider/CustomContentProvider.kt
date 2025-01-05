@@ -4,9 +4,17 @@ import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
-
+import android.util.Log
+import dagger.hilt.android.EntryPointAccessors
+import gaur.himanshu.daggerhiltcrashcourse.BaseApplication
+import gaur.himanshu.daggerhiltcrashcourse.model.Engine
+import javax.inject.Inject
 
 class CustomContentProvider : ContentProvider() {
+
+
+    @Inject
+    lateinit var engine: Engine
 
     companion object {
         val TABLE = "table"
@@ -16,6 +24,19 @@ class CustomContentProvider : ContentProvider() {
     }
 
     override fun onCreate(): Boolean {
+
+        (context?.applicationContext as BaseApplication)
+            .parentComponent
+            .childComponentFactory()
+            .create()
+            .inject(this)
+
+        val entryPoint =
+            EntryPointAccessors.fromApplication(context!!, EntryPointMethod::class.java)
+
+
+
+        Log.d("TAGGGGGGGGGG", "onCreate: ${entryPoint.getEngine().name}")
 
         return true
     }
